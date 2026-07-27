@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const router = require("./routes/authRoute");
 const product = require("./routes/productRoutes");
+const cart = require("./routes/cartRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
 const app = express();
@@ -19,6 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/auth", router);
 app.use("/products", product);
+app.use("/cart", cart);
 
 app.get("/", (req, res) => {
   res.send("App is running on local host");
