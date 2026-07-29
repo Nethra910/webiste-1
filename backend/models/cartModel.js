@@ -142,6 +142,36 @@ const hasCartItems = async (cartId) => {
   return rows[0].count > 0;
 };
 
+const getCartItemsByUser = async (userId) => {
+  const query = `
+        SELECT
+            ci.id AS cart_item_id,
+            ci.quantity,
+
+            p.id AS product_id,
+            p.name,
+            p.price,
+            p.stock,
+            p.image_url,
+
+            CAST(ci.quantity * p.price AS DECIMAL(10,2)) AS subtotal
+
+        FROM cart c
+
+        INNER JOIN cart_items ci
+            ON c.id = ci.cart_id
+
+        INNER JOIN products p
+            ON ci.product_id = p.id
+
+        WHERE c.user_id = ?
+    `;
+
+  const [rows] = await db.execute(query, [userId]);
+
+  return rows;
+};
+
 module.exports = {
   createCart,
   getCartByUserId,
@@ -154,4 +184,5 @@ module.exports = {
   getCartItems,
   deleteCart,
   hasCartItems,
+  getCartItemsByUser,
 };

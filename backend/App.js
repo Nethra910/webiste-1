@@ -5,6 +5,8 @@ const cors = require("cors");
 const router = require("./routes/authRoute");
 const product = require("./routes/productRoutes");
 const address = require("./routes/addressRoutes");
+const orders = require("./routes/orderRoutes");
+const adminOrders = require("./routes/adminOrderRoutes");
 const cart = require("./routes/cartRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
@@ -23,6 +25,8 @@ app.use("/auth", router);
 app.use("/products", product);
 app.use("/cart", cart);
 app.use("/addresses", address);
+app.use("/orders", orders);
+app.use("/admin/orders", adminOrders);
 
 app.get("/", (req, res) => {
   res.send("App is running on local host");
