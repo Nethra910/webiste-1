@@ -7,8 +7,8 @@ const authRateLimit = require("../middleware/authRateLimit");
 
 router.post("/register",authRateLimit,registerValidation,validate,register);
 router.post("/login",authRateLimit,loginValidation,validate,login);
-router.post("/refresh",refresh);
-router.post("/logout",logout);
+router.post("/refresh",authRateLimit,refresh);
+router.post("/logout",authRateLimit,logout);
 router.get("/profile",verifyToken,(req,res)=>{
     res.status(200).json({message: "Profile data",user: req.user});
 })
