@@ -28,6 +28,8 @@ function Dashboard() {
 
       <h1>Dashboard</h1>
 
+      <p>Role: {user?.role}</p>
+
       <h2>{user?.username}</h2>
 
       <p>{user?.email}</p>

@@ -15,8 +15,8 @@ const register = async (req, res, next) => {
     }
     const hashPassword = await bcrypt.hash(password, 10);
     const sql_query =
-      "insert into users(username,email,password) values(?,?,?)";
-    await db.execute(sql_query, [username, email, hashPassword]);
+      "insert into users(username,email,password,role) values(?,?,?,?)";
+    await db.execute(sql_query, [username, email, hashPassword, "customer"]);
     return res
       .status(201)
       .json({ success: true, message: "user registered successfully" });
@@ -27,7 +27,7 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
     const sql_query = "select * from users where email = ?";
     const [data] = await db.execute(sql_query, [email]);
     if (data.length === 0) {
@@ -37,6 +37,9 @@ const login = async (req, res, next) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       throw new ApiError(400, "Invalid credentials");
+    }
+    if (user.role !== role) {
+      throw new ApiError(403, "Role does not match selected login");
     }
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
@@ -98,7 +101,16 @@ const refresh = async (req, res, next) => {
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    return res.status(200).json({ success: true, accessToken: accessToken });
+    return res.status(200).json({
+      success: true,
+      accessToken: accessToken,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (err) {
     if (err.name === "TokenExpiredError") {
       return next(new ApiError(401, "Refresh token expired"));

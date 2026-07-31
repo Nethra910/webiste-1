@@ -5,9 +5,11 @@ function ProtectedRoute() {
 
     const { auth } = useAuth();
 
-    return auth.accessToken
-        ? <Outlet />
-        : <Navigate to="/login" replace />;
+    if (!auth.accessToken) {
+        return <Navigate to="/login" replace />;
+    }
+
+    return <Outlet />;
 }
 
 export default ProtectedRoute;

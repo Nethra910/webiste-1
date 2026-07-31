@@ -14,6 +14,8 @@ function Login() {
 
     const [password, setPassword] = useState("");
 
+    const [role, setRole] = useState("customer");
+
     const [message, setMessage] = useState("");
 
     const handleSubmit = async (e) => {
@@ -26,7 +28,8 @@ function Login() {
 
             const response = await api.post("/auth/login", {
                 email,
-                password
+                password,
+                role
             });
 
             console.log(response.data);
@@ -39,7 +42,7 @@ function Login() {
 
             });
 
-            navigate("/dashboard");
+            navigate(response.data.user.role === "admin" ? "/admin/dashboard" : "/customer/dashboard");
 
         }
 
@@ -84,6 +87,16 @@ function Login() {
                     value={password}
                     onChange={(e)=>setPassword(e.target.value)}
                 />
+
+                <br/><br/>
+
+                <select
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                >
+                    <option value="customer">Customer</option>
+                    <option value="admin">Admin</option>
+                </select>
 
                 <br/><br/>
 

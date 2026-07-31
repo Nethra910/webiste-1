@@ -28,6 +28,12 @@ const loginValidation = [
     .isEmail()
     .withMessage("Invalid email format"),
   body("password").notEmpty().withMessage("Password is required"),
+  body("role")
+    .trim()
+    .notEmpty()
+    .withMessage("Role is required")
+    .isIn(["customer", "admin"])
+    .withMessage("Role must be either customer or admin"),
 ];
 
 const validate = (req, res, next) => {
