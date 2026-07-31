@@ -3,7 +3,7 @@ const MAX_REQUESTS = 10;
 
 const requestStore = new Map();
 
-const authRateLimit = (req, res, next) => {
+const rateLimit = (req, res, next) => {
   const ip = req.ip || req.connection.remoteAddress || "unknown";
   const now = Date.now();
   const current = requestStore.get(ip);
@@ -25,4 +25,4 @@ const authRateLimit = (req, res, next) => {
   return next();
 };
 
-module.exports = authRateLimit;
+module.exports = rateLimit;
