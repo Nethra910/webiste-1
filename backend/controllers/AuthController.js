@@ -98,7 +98,16 @@ const refresh = async (req, res, next) => {
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    return res.status(200).json({ success: true, accessToken: accessToken });
+    return res.status(200).json({
+      success: true,
+      accessToken,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (err) {
     if (err.name === "TokenExpiredError") {
       return next(new ApiError(401, "Refresh token expired"));

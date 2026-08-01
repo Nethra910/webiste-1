@@ -1,0 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+@import "tailwindcss";
+
+* {
+  font-family: "Outfit", sans-serif;
+}
+.active {
+  @apply bg-blue-100 text-blue-600 font-semibold border-r-4 border-blue-600;
+}

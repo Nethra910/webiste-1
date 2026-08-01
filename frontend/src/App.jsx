@@ -1,31 +1,49 @@
-import { Routes, Route } from "react-router-dom";
+import React from "react";
+import Navbar from "./components/Navbar.jsx";
+import Sidebar from "./components/Sidebar.jsx";
+import { Route, Routes } from "react-router-dom";
+import List from "./pages/List.jsx";
+import Add from "./pages/Add.jsx";
+import Categories from "./pages/Categories.jsx";
+import Login from "./components/Login.jsx";
+import { useAuth } from "./context/AuthContext.jsx";
+import { ToastContainer } from "react-toastify";
 
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
+const App = () => {
+  const { accessToken, loading } = useAuth();
+  if (loading) {
+    return <h2>Loading...</h2>;
+  }
 
-import ProtectedRoute from "./components/ProtectedRoute";
-import PublicRoute from "./components/PublicRoute";
-import PersistLogin from "./components/PersistLogin";
-
-function App() {
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route element={<PublicRoute />}>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Route>
+    <div className="min-h-screen bg-gray-100">
+      {!accessToken ? (
+        <Login />
+      ) : (
+        <>
+          <ToastContainer />
+          <Navbar />
 
-      {/* Protected Routes */}
-      <Route element={<PersistLogin />}>
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Route>
-      </Route>
-    </Routes>
+          <hr className="border-gray-200" />
+
+          <div className="flex">
+            <Sidebar />
+            <div>
+              <Routes>
+                <Route path="/list" element={<List />} />
+                <Route path="/add" element={<Add />} />
+                <Route path="/categories" element={<Categories />} />
+              </Routes>
+            </div>
+
+            <main className="flex-1 p-6">
+              {/* Your pages will be rendered here */}
+            </main>
+          </div>
+        </>
+      )}
+    </div>
   );
-}
+};
 
 export default App;
