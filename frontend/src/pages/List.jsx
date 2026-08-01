@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/api";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const List = () => {
@@ -133,12 +134,21 @@ const List = () => {
                     </td>
 
                     <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => handleDelete(product.id)}
-                        className="rounded-lg bg-red-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-600 active:scale-95"
-                      >
-                        Delete
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          to={`/edit/${product.id}`}
+                          className="rounded-lg bg-yellow-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-yellow-600 active:scale-95"
+                        >
+                          Edit
+                        </Link>
+
+                        <button
+                          onClick={() => handleDelete(product.id)}
+                          className="rounded-lg bg-red-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-600 active:scale-95"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

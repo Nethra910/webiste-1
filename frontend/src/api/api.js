@@ -16,7 +16,7 @@ api.interceptors.request.use(
     const token = getAccessToken();
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = 'Bearer ' + token;
     }
 
     return config;
@@ -54,7 +54,7 @@ api.interceptors.response.use(
 
         setAccessToken(newAccessToken);
 
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        originalRequest.headers.Authorization = 'Bearer ' + newAccessToken;
 
         return api(originalRequest);
       } catch (refreshError) {

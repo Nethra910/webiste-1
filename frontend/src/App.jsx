@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import List from "./pages/List.jsx";
 import Add from "./pages/Add.jsx";
 import Categories from "./pages/Categories.jsx";
+import Edit from "./pages/Edit.jsx";
 import Login from "./components/Login.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 import { ToastContainer } from "react-toastify";
@@ -32,6 +33,7 @@ const App = () => {
               <Routes>
                 <Route path="/list" element={<List />} />
                 <Route path="/add" element={<Add />} />
+                <Route path="/edit/:id" element={<Edit />} />
                 <Route path="/categories" element={<Categories />} />
               </Routes>
             </div>
