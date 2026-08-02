@@ -9,6 +9,7 @@ const productValidation = require("../validations/productValidation");
 const {
   addProduct,
   getAllProducts,
+  searchProducts,
   getProductById,
   updateProduct,
   deleteProduct,
@@ -23,6 +24,7 @@ router.post(
   addProduct,
 );
 router.get("/", getAllProducts);
+router.get("/search", searchProducts);
 router.get("/:id", getProductById);
 router.put(
   "/:id",

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../api/api";
 import { toast } from "react-toastify";
+import { getCategories } from "../api/categoryApi";
+import { getProductById, updateProductById } from "../api/productApi";
 
 const Edit = () => {
   const { id } = useParams();
@@ -13,19 +14,20 @@ const Edit = () => {
   const [stock, setStock] = useState(0);
   const [categoryId, setCategoryId] = useState("");
   const [image, setImage] = useState("");
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await api.get(`/products/${id}`);
-        const product = response.data.product || response.data;
+        const response = await getProductById(id);
+        const product = response.product || response;
 
         setName(product.name || "");
         setDescription(product.description || "");
         setPrice(product.price ?? 0);
         setStock(product.stock ?? 0);
-        setCategoryId(product.category_id ?? product.category_id ?? "");
+        setCategoryId(product.category_id ? String(product.category_id) : "");
         setImage(product.image_url || product.image || "");
       } catch (err) {
         toast.error(err.response?.data?.message || "Failed to load product");
@@ -36,6 +38,19 @@ const Edit = () => {
 
     fetchProduct();
   }, [id]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getCategories();
+        setCategories(response.categories || []);
+      } catch (err) {
+        toast.error(err.response?.data?.message || "Failed to load categories");
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,12 +65,12 @@ const Edit = () => {
         image_url: image,
       };
 
-      const response = await api.put(`/products/${id}`, payload);
+      const response = await updateProductById(id, payload);
 
-      if (response.data.success) {
-        toast.success(response.data.message || "Product updated successfully");
+      if (response.success) {
+        toast.success(response.message || "Product updated successfully");
       } else {
-        toast.success(response.data.message || "Product updated");
+        toast.success(response.message || "Product updated");
       }
 
       navigate("/list");
@@ -141,9 +156,11 @@ const Edit = () => {
               className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
             >
               <option value="">Select Category</option>
-              <option value="1">Pickles</option>
-              <option value="2">Sweets</option>
-              <option value="3">Snacks</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
             </select>
           </div>
 

@@ -29,6 +29,7 @@ const getAllProducts = async (filters) => {
             p.description,
             p.price,
             p.stock,
+            p.category_id,
             p.image_url,
             c.name AS category
         ${baseSql}
@@ -60,7 +61,7 @@ const getAllProducts = async (filters) => {
   }
   const offset = (filters.page - 1) * filters.limit;
   sql += ` LIMIT ${Number(filters.limit)} OFFSET ${Number(offset)}`;
-  const queryValues = [...values, filters.limit, offset];
+  const queryValues = [...values];
   const [rows] = await db.execute(sql, queryValues);
   return rows;
 };
@@ -85,6 +86,7 @@ const getProductById = async (id) => {
             p.description,
             p.price,
             p.stock,
+            p.category_id,
             p.image_url,
             c.name as category
         from 

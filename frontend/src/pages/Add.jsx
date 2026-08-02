@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import api from "../api/api";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { getCategories } from "../api/categoryApi";
+import { createProduct } from "../api/productApi";
 
 const Add = () => {
 
@@ -10,6 +11,19 @@ const Add = () => {
   const [stock, setStock] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [image, setImage] = useState("");
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getCategories();
+        setCategories(response.categories || []);
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to load categories");
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,17 +32,17 @@ const Add = () => {
       const productData = {
         name,
         description,
-        price,
-        stock,
-        category_id: categoryId,
+        price: Number(price),
+        stock: Number(stock),
+        category_id: Number(categoryId),
         image_url: image,
       };
 
-      const response = await api.post("/products/", productData);
-      if (response.data.success) {
-        toast.success(response.data.message || "Product added successfully");
+      const response = await createProduct(productData);
+      if (response.success) {
+        toast.success(response.message || "Product added successfully");
       } else {
-        toast.error(response.data.message || "Failed to add product");
+        toast.error(response.message || "Failed to add product");
       }
 
       // clear form after success
@@ -39,7 +53,7 @@ const Add = () => {
       setCategoryId("");
       setImage("");
     } catch (error) {
-      console.log(error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Failed to add product");
     }
   };
 
@@ -147,9 +161,11 @@ const Add = () => {
               className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
             >
               <option value="">Select Category</option>
-              <option value="1">Pickles</option>
-              <option value="2">Sweets</option>
-              <option value="3">Snacks</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
             </select>
           </div>
 

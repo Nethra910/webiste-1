@@ -1,6 +1,14 @@
 const Product = require("../models/productModel");
 const ApiError = require("../utils/ApiError");
 
+const buildProductFilters = (query) => ({
+  search: query.search || query.q || "",
+  category: query.category || "",
+  sort: query.sort || "newest",
+  page: Number(query.page) || 1,
+  limit: Number(query.limit) || 10,
+});
+
 const addProduct = async (req, res, next) => {
   try {
     await Product.createProduct(req.body);
@@ -16,13 +24,28 @@ const addProduct = async (req, res, next) => {
 
 const getAllProducts = async (req, res, next) => {
   try {
-    const filters = {
-      search: req.query.search || "",
-      category: req.query.category || "",
-      sort: req.query.sort || "newest",
-      page: Number(req.query.page) || 1,
-      limit: Number(req.query.limit) || 10,
-    };
+    const filters = buildProductFilters(req.query);
+
+    const products = await Product.getAllProducts(filters);
+    const totalProducts = await Product.getProductCount(filters);
+    const totalPages = Math.ceil(totalProducts / filters.limit);
+
+    return res.status(200).json({
+      success: true,
+      page: filters.page,
+      limit: filters.limit,
+      totalProducts,
+      totalPages,
+      products,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const searchProducts = async (req, res, next) => {
+  try {
+    const filters = buildProductFilters(req.query);
 
     const products = await Product.getAllProducts(filters);
     const totalProducts = await Product.getProductCount(filters);
@@ -117,6 +140,7 @@ const deleteProduct = async (req, res, next) => {
 module.exports = {
   addProduct,
   getAllProducts,
+  searchProducts,
   getProductById,
   updateProduct,
   deleteProduct,

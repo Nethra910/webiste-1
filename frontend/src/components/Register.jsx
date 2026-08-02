@@ -1,34 +1,38 @@
-import React from "react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../api/api.js";
-const Login = () => {
-  const [error, setError] = useState("");
+
+const Register = () => {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth();
+  const [error, setError] = useState("");
+
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     setError("");
-    try {
-      setEmail("");
 
-      const response = await api.post("/auth/login", {
+    try {
+      const response = await api.post("/auth/register", {
+        username,
         email,
         password,
       });
+
       if (response.data.success) {
-        login(response.data.accessToken, response.data.user);
-        toast.success("Login successful");
+        toast.success(response.data.message || "Registration successful");
+        navigate("/login");
       } else {
-        toast.error("Login failed. Please try again.");
+        setError(response.data.message || "Registration failed");
       }
-    } catch (error) {
-      const validationMessage = error.response?.data?.errors?.[0]?.msg;
+    } catch (err) {
+      const validationMessage = err.response?.data?.errors?.[0]?.msg;
       setError(
-        error.response?.data?.message || validationMessage || "Login failed",
+        err.response?.data?.message ||
+          validationMessage ||
+          "Registration failed",
       );
     }
   };
@@ -37,10 +41,28 @@ const Login = () => {
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
         <h2 className="mb-6 text-center text-3xl font-bold text-gray-800">
-          Customer Login
+          Customer Register
         </h2>
 
         <form onSubmit={onSubmitHandler} className="space-y-5">
+          <div>
+            <label
+              htmlFor="username"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
+              required
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+            />
+          </div>
+
           <div>
             <label
               htmlFor="email"
@@ -48,13 +70,11 @@ const Login = () => {
             >
               Email
             </label>
-
             <input
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
-              type="email"
               id="email"
-              name="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
               className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
@@ -68,15 +88,13 @@ const Login = () => {
             >
               Password
             </label>
-
             <input
-              type="password"
               id="password"
-              name="password"
-              placeholder="Enter your password"
-              required
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              required
               className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
             />
           </div>
@@ -91,12 +109,13 @@ const Login = () => {
             type="submit"
             className="w-full rounded-lg bg-blue-600 py-3 font-semibold text-white transition duration-200 hover:bg-blue-700 active:scale-[0.98]"
           >
-            Login
+            Register
           </button>
+
           <p className="text-center text-sm text-gray-600">
-            New customer?{" "}
-            <Link to="/register" className="font-semibold text-blue-600">
-              Create an account
+            Already have an account?{" "}
+            <Link to="/login" className="font-semibold text-blue-600">
+              Login
             </Link>
           </p>
         </form>
@@ -105,4 +124,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
